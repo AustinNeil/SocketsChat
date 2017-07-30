@@ -31,6 +31,12 @@ $(function (){
     }
   }
 
+  function notifyAddUser(){
+    if(username){
+      socket.emit('new connected user');
+    }
+  }
+
   // Prevents input from having injected markup
   function cleanInput (input) {
     return $('<div/>').text(input).text();
@@ -64,14 +70,20 @@ $(function (){
         typing = false;
       } else {
         // if username hasn't been set, call this (will only happen in login page once)
-        setUsername();
+        setUsername();   
+        // tell other users someone has been added
+        notifyAddUser(); 
       }
     }
   });
-
-
+  
   // emit the new connection being established
-  socket.emit('new connection');
+  socket.emit('new connection');  
+
+  // When a new user establishes a connection to server
+  socket.on('new connected user', function(username){
+    $('.messages').append($('<li>').text(username + " has joined"))
+  });
 
   // when a chat message has been received from server
   socket.on('chat message',function(msg){

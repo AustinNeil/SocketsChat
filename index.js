@@ -31,6 +31,11 @@ io.on('connection', function(socket){
 		socket.username = username;
 	});
 
+	// when a user has connected on client side
+	socket.on('new connected user', function(){
+		socket.broadcast.emit('new connected user', socket.username);
+	});
+
 	// when client side emits "disconnect"
 	socket.on('disconnect', function(){
 		// emit to all users a lost connection (pass to client)
