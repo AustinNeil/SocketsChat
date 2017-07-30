@@ -1,6 +1,9 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var path = require('path');
+var express = require('express');
+app.use(express.static(path.join(__dirname, 'public')));
 
 // set the / route
 app.get('/', function(req, res){
@@ -11,19 +14,27 @@ app.get('/', function(req, res){
 // on instance connection to the server
 io.on('connection', function(socket){
 	// when client side emits "connection"...
-	socket.on('connection', function(user){
+	socket.on('connection', function(){
 		// emit to all users a new connection (pass to client side)
-		io.emit('new connection', user);
+		io.emit('new connection');
 	});
+
 	// when client side emits "chat message"...
 	socket.on('chat message', function(msg){
 		// emit to all users a new message (pass to client)
 		io.emit('chat message', msg);
 	});
+
+	// when  a user has been added from client side
+	socket.on('add user', function(username){
+		// store the username in their unique socket
+		socket.username = username;
+	});
+
 	// when client side emits "disconnect"
 	socket.on('disconnect', function(){
 		// emit to all users a lost connection (pass to client)
-		io.emit('lost connection', user);
+		io.emit('lost connection');
 	});
 });
 // listen on port 3000

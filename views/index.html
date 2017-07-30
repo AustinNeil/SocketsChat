@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  </head>
+  <body>
+    <div id="login">
+      <form action="" class="login">
+        <label>ENTER A NAME</label><input id="nameinput" autocomplete="off" placeholder="Enter a username"><button>Login</buton>
+      </form>
+    </div>
+    <script>
+      // Hide the chatroom on load
+      $('#chatroom').hide();
+      // when login is pressed
+      $("#nameinput").submit(function(){
+        // assign the user based on their input
+        var user = $("#nameinput").val();
+        // hide the login screen
+        $('#login').hide();
+        // show the chatroom
+        $('#chatroom').show();
+      });
+    </script>
+    <div id="chatroom">
+      <ul id="messages"></ul>
+      <form action="" class="chat">
+        <input id="m" autocomplete="off"><button>Send</button>
+      </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      $(function (){
+        // Initialize socket
+        var socket = io('http://localhost:3000');
+        // emit the new connection with the user name
+        socket.emit('new connection', user);
+        // when a message has been submitted
+        $('.chat').submit(function(){
+            // emit a new chat message, pass the message
+            socket.emit('chat message', $('#m').val());
+            // set the message box to empty again
+            $('#m').val('');
+            return false;
+        });
+          // when a chat message has been received from server
+          socket.on('chat message',function(msg){
+            // append an li to the message id with the message
+            $('#messages').append($('<li>').text(msg));
+          });
+      });
+    </script>
+  </body>
+</html>
+    
